@@ -1,0 +1,216 @@
+// Generic multi-business loyalty platform schema.
+// A Business configures a Program (earn rule, points name, tier thresholds);
+// Members join one Business's club; every point mutation is an immutable LedgerEntry.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  STAFF
+}
+
+enum LedgerReason {
+  EARN
+  REDEEM
+  ADJUST
+}
+
+enum CouponStatus {
+  ACTIVE
+  REDEEMED
+  EXPIRED
+}
+
+enum OfferKind {
+  SALE
+  PROMO
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("")
+  phone        String   @default("")
+  phoneVerified Boolean  @default(false)
+  phoneVerifyCode String?
+  phoneVerifyExpiresAt DateTime?
+  tokenVersion Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  memberships   Membership[]
+  businesses    BusinessStaff[]
+  invitesSent   StaffInvite[] @relation("Inviter")
+  invitesOpened StaffInvite[] @relation("Invitee")
+  referralsSent   CrossStoreReferral[] @relation("Referrer")
+  referralsReceived CrossStoreReferral[] @relation("Referee")
+}
+
+model Business {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  address   String   @default("")
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+
+  program    Program?
+  staff      BusinessStaff[]
+  members    Membership[]
+  rewards    Reward[]
+  offers     Offer[]
+  checkins   Checkin[]
+  coupons    Coupon[]
+  invites    StaffInvite[]
+  referralSources  CrossStoreReferral[] @relation("ReferralSource")
+  referralTargets  CrossStoreReferral[] @relation("ReferralTarget")
+}
+
+model BusinessStaff {
+  id         String @id @default(cuid())
+  userId     String
+  businessId String
+  role       Role
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+}
+
+model Program {
+  id          String   @id @default(cuid())
+  businessId  String   @unique
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  pointsName  String   @default("points")
+  earnRate    Int      @default(10) // points per 1 currency unit spent
+  minRedeem   Int      @default(100) // smallest redemption
+  currency    String   @default("USD")
+  tierNames   String   @default("Member") // comma-separated, lowest first
+  tierThresholds String @default("") // comma-separated spend thresholds matching tierNames
+}
+
+model Membership {
+  id         String   @id @default(cuid())
+  userId     String
+  businessId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  points     Int      @default(0)
+  lifetimeEarned Int  @default(0)
+  lifetimeSpend  Float @default(0)
+  referralCode String  @unique @default(cuid())
+  joinedAt   DateTime @default(now())
+
+  entries  LedgerEntry[]
+  checkins Checkin[]
+  coupons  Coupon[]
+
+  @@unique([userId, businessId])
+}
+
+model Reward {
+  id           String   @id @default(cuid())
+  businessId   String
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  title        String
+  description  String   @default("")
+  cost         Int // points
+  active       Boolean  @default(true)
+  // Coupons issued from this reward expire after this many days (null = never).
+  expiresInDays Int?
+  coupons      Coupon[]
+}
+
+model Offer {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  title      String
+  description String  @default("")
+  kind       OfferKind @default(SALE)
+  discount   String   @default("") // human string e.g. "20% off"
+  startsAt   DateTime?
+  endsAt     DateTime?
+  active     Boolean  @default(true)
+}
+
+model Checkin {
+  id           String   @id @default(cuid())
+  membershipId String
+  businessId   String
+  staffId      String? // User id of staff who recorded it
+  points       Int
+  spend        Float
+  at           DateTime @default(now())
+
+  membership Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  business   Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model LedgerEntry {
+  id           String       @id @default(cuid())
+  membershipId String
+  membership   Membership   @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  delta        Int
+  reason       LedgerReason
+  note         String       @default("")
+  staffId      String?
+  createdAt    DateTime     @default(now())
+}
+
+model Coupon {
+  id           String       @id @default(cuid())
+  membershipId String
+  membership   Membership   @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  rewardId     String?
+  reward       Reward?      @relation(fields: [rewardId], references: [id])
+  businessId   String
+  business     Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  code         String       @unique @default(cuid())
+  status       CouponStatus @default(ACTIVE)
+  redeemedAt   DateTime?
+  issuedAt     DateTime     @default(now())
+  expiresAt    DateTime?
+}
+
+model StaffInvite {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  email      String // lowercase; the invited staff account
+  invitedBy  String
+  inviter    User     @relation("Inviter", fields: [invitedBy], references: [id], onDelete: Cascade)
+  userId     String? // set when an invitee accepts
+  invitee    User?    @relation("Invitee", fields: [userId], references: [id])
+  acceptedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  @@unique([businessId, email])
+}
+
+model CrossStoreReferral {
+  id          String   @id @default(cuid())
+  code        String   @unique @default(cuid())
+  referrerId  String   // user who shared the code
+  referrer    User     @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  refereeId   String?  // user who joined using the code (null until claimed)
+  referee     User?    @relation("Referee", fields: [refereeId], references: [id])
+  sourceBusinessId String? // business where the referrer is a member
+  sourceBusiness    Business? @relation("ReferralSource", fields: [sourceBusinessId], references: [id])
+  targetBusinessId  String?  // business the referee is encouraged to join
+  targetBusiness    Business? @relation("ReferralTarget", fields: [targetBusinessId], references: [id])
+  bonusPoints Int     @default(50) // bonus awarded to referrer when code is used
+  refereeBonus Int   @default(50) // bonus awarded to referee on join
+  status      String  @default("PENDING") // PENDING, CLAIMED, EXPIRED
+  claimedAt   DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+}
