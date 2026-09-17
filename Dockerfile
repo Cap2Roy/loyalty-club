@@ -11,11 +11,11 @@ RUN npm ci
 
 COPY . .
 
+# Generate Prisma client BEFORE building (types needed for tsc)
+RUN npx prisma generate
+
 # Build Next.js
 RUN npm run build
-
-# Generate Prisma client
-RUN npx prisma generate
 
 # ── Production stage ──
 FROM node:20-slim AS runner
