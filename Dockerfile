@@ -11,6 +11,9 @@ RUN npm ci
 
 COPY . .
 
+# Provide DATABASE_URL for prisma generate (not used at build time, just required by config)
+ENV DATABASE_URL="file:./dev.db"
+
 # Generate Prisma client BEFORE building (types needed for tsc)
 RUN npx prisma generate
 
