@@ -130,12 +130,12 @@ export default async function CardPage({
             height={200}
             style={{ display: "block", margin: "0 auto", borderRadius: 8, imageRendering: "pixelated" }}
           />
-          <div style={{ marginTop: 12, fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", color: "var(--ink-soft)", textTransform: "uppercase" }}>
+          <div style={{ marginTop: 12, fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", color: "#1a1a2e", textTransform: "uppercase" }}>
             Referral code
           </div>
           <code
             className="mono"
-            style={{ display: "inline-block", marginTop: 4, fontSize: 15, fontWeight: 600 }}
+            style={{ display: "inline-block", marginTop: 4, fontSize: 15, fontWeight: 600, color: "#1a1a2e", background: "rgba(0,0,0,0.05)", borderColor: "rgba(0,0,0,0.1)" }}
           >
             {membership.referralCode}
           </code>
