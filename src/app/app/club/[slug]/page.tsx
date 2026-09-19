@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { computeTier, programDefaults } from "@/lib/loyalty";
 import RedeemButton from "@/components/RedeemButton";
 import ReferralShare from "@/components/ReferralShare";
+import ScrollReveal from "@/components/ScrollReveal";
+import AnimatedCounter from "@/components/AnimatedCounter";
 
 export default async function ClubPage({
   params,
@@ -78,52 +80,61 @@ export default async function ClubPage({
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <a href="/app" className="btn secondary small">← My clubs</a>
-        <h1 style={{ margin: 0, fontSize: 24 }}>{business.name}</h1>
-        <span className="badge good">{tier.name}</span>
-      </div>
-
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <a href="/app" className="badge muted">My clubs</a>
-        <a href="/app/explore" className="badge muted">Explore clubs</a>
-        <a href="/app/offers" className="badge muted">Offers feed</a>
-        <a href="/app/invites" className="badge muted">My invites</a>
-        <a href="/app/map" className="badge muted">Map</a>
-        <a href={`/app/card/${slug}`} className="badge muted">Card</a>
-        <a href="/app/account" className="badge muted">Account</a>
-      </div>
-
-      <div className="points-hero">
-        <div className="label">{pointsName.toUpperCase()}</div>
-        <div className="value">{membership.points.toLocaleString()}</div>
-        <div className="label" style={{ marginTop: 8 }}>
-          {currency} {membership.lifetimeSpend.toFixed(2)} lifetime spend ·{" "}
-          {membership.lifetimeEarned.toLocaleString()} {pointsName} earned
+      <ScrollReveal direction="up">
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <a href="/app" className="btn secondary small">← My clubs</a>
+          <h1 style={{ margin: 0, fontSize: 24 }}>{business.name}</h1>
+          <span className="badge good">{tier.name}</span>
         </div>
-      </div>
+      </ScrollReveal>
 
-      <div className="card">
-        <h2>Tier progress</h2>
-        {tier.nextThreshold !== null ? (
-          <>
-            <p style={{ margin: "0 0 4px", color: "var(--muted)", fontSize: 14 }}>
-              Spend {currency} {(tier.nextThreshold - membership.lifetimeSpend).toFixed(2)} more to reach the next tier.
-            </p>
-            <div className="progress" aria-label={`Progress to next tier: ${Math.round((progress ?? 0) * 100)}%`}>
-              <div style={{ width: `${Math.round((progress ?? 0) * 100)}%` }} />
-            </div>
-            <p style={{ margin: "8px 0 0", fontSize: 13, color: "var(--muted)" }}>
-              {currency} {membership.lifetimeSpend.toFixed(2)} / {currency} {tier.nextThreshold.toFixed(2)}
-            </p>
-          </>
-        ) : (
-          <p style={{ margin: 0, color: "var(--muted)", fontSize: 14 }}>
-            You&apos;ve reached the top tier. Thanks for being a loyal member!
-          </p>
-        )}
-      </div>
+      <ScrollReveal direction="up" delay={1}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <a href="/app" className="badge muted">My clubs</a>
+          <a href="/app/explore" className="badge muted">Explore clubs</a>
+          <a href="/app/offers" className="badge muted">Offers feed</a>
+          <a href="/app/invites" className="badge muted">My invites</a>
+          <a href="/app/map" className="badge muted">Map</a>
+          <a href={`/app/card/${slug}`} className="badge muted">Card</a>
+          <a href="/app/account" className="badge muted">Account</a>
+        </div>
+      </ScrollReveal>
 
+      <ScrollReveal direction="scale" delay={2}>
+        <div className="points-hero">
+          <div className="label">{pointsName.toUpperCase()}</div>
+          <div className="value"><AnimatedCounter value={membership.points} /></div>
+          <div className="label" style={{ marginTop: 8 }}>
+            {currency} {membership.lifetimeSpend.toFixed(2)} lifetime spend ·{" "}
+            {membership.lifetimeEarned.toLocaleString()} {pointsName} earned
+          </div>
+        </div>
+      </ScrollReveal>
+
+      <ScrollReveal direction="up" delay={3}>
+        <div className="card">
+          <h2>Tier progress</h2>
+          {tier.nextThreshold !== null ? (
+            <>
+              <p style={{ margin: "0 0 4px", color: "var(--muted)", fontSize: 14 }}>
+                Spend {currency} {(tier.nextThreshold - membership.lifetimeSpend).toFixed(2)} more to reach the next tier.
+              </p>
+              <div className="progress" aria-label={`Progress to next tier: ${Math.round((progress ?? 0) * 100)}%`}>
+                <div style={{ width: `${Math.round((progress ?? 0) * 100)}%` }} />
+              </div>
+              <p style={{ margin: "8px 0 0", fontSize: 13, color: "var(--muted)" }}>
+                {currency} {membership.lifetimeSpend.toFixed(2)} / {currency} {tier.nextThreshold.toFixed(2)}
+              </p>
+            </>
+          ) : (
+            <p style={{ margin: 0, color: "var(--muted)", fontSize: 14 }}>
+              You&apos;ve reached the top tier. Thanks for being a loyal member!
+            </p>
+          )}
+        </div>
+      </ScrollReveal>
+
+      <ScrollReveal direction="up" delay={4}>
       <div className="grid cols-2">
         <div className="card">
           <h2>Rewards</h2>
@@ -195,7 +206,9 @@ export default async function ClubPage({
           )}
         </div>
       </div>
+      </ScrollReveal>
 
+      <ScrollReveal direction="up" delay={5}>
       <div className="card">
         <h2>Your coupons</h2>
         {coupons.length === 0 ? (
@@ -232,7 +245,9 @@ export default async function ClubPage({
           </table>
         )}
       </div>
+      </ScrollReveal>
 
+      <ScrollReveal direction="up" delay={6}>
       <div className="grid cols-2">
         <div className="card">
           <h2>Invite a friend</h2>
@@ -276,6 +291,9 @@ export default async function ClubPage({
           )}
         </div>
       </div>
+      </ScrollReveal>
+
+      <ScrollReveal direction="up" delay={7}>
       <div className="card">
         <h2>Refer to another club</h2>
         <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 0 }}>
@@ -298,6 +316,7 @@ export default async function ClubPage({
           }))}
         />
       </div>
+      </ScrollReveal>
     </div>
   );
 }

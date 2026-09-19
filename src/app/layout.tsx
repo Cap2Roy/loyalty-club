@@ -3,6 +3,8 @@ import { currentUser } from "@/lib/auth";
 import TopBar from "@/components/TopBar";
 import ChatWidget from "@/components/ChatWidget";
 import PWARegister from "@/components/PWARegister";
+import MorphingOrbs from "@/components/MorphingOrbs";
+import PageTransition from "@/components/PageTransition";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,9 +24,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body>
+        <MorphingOrbs />
         <PWARegister />
         <TopBar userName={user?.email ?? null} />
-        <main className="container" style={{ paddingTop: 24, paddingBottom: 48 }}>{children}</main>
+        <main className="container" style={{ paddingTop: 24, paddingBottom: 48 }}>
+          <PageTransition>{children}</PageTransition>
+        </main>
         <ChatWidget />
       </body>
     </html>

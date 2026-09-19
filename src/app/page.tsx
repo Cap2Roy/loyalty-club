@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
+import ScrollReveal from "@/components/ScrollReveal";
 
 // Directory data is live DB state — never snapshot it at build time.
 export const dynamic = "force-dynamic";
@@ -89,13 +90,12 @@ export default async function LandingPage() {
         <div className="scene" style={{ position: "relative", zIndex: 1 }}>
           <div className="tilt">
             <h1
-              className="lift"
+              className="lift text-shimmer float-y"
               style={{
                 margin: 0,
                 fontSize: 60,
                 fontWeight: 800,
                 letterSpacing: "-0.03em",
-                color: "#fff",
                 textShadow: "0 2px 12px rgba(15, 23, 42, 0.25)",
               }}
             >
@@ -136,7 +136,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Live demo directory */}
-      <section>
+      <ScrollReveal as="section">
         <h2 style={heading}>Try the live demo</h2>
         <p style={sub}>Clubs running on this instance right now — open one to browse its program, offers and rewards.</p>
         {businesses.length === 0 ? (
@@ -145,73 +145,78 @@ export default async function LandingPage() {
           </div>
         ) : (
           <div className="grid cols-3">
-            {businesses.map((b) => (
-              <Link
-                key={b.id}
-                href={`/b/${b.slug}`}
-                className="dir-card"
-              >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>{b.name}</h3>
-                  <span className="badge">{b.program?.pointsName ?? "points"}</span>
-                </div>
-                <p style={{ margin: 0 }}>
-                  <code className="mono">/b/{b.slug}</code>
-                </p>
-                <p style={{ margin: 0, fontSize: 14, color: "var(--muted)" }}>
-                  <strong style={{ color: "var(--ink)" }}>{b._count.members}</strong>{" "}
-                  {b._count.members === 1 ? "member" : "members"} ·{" "}
-                  <strong style={{ color: "var(--ink)" }}>{b._count.offers}</strong> active{" "}
-                  {b._count.offers === 1 ? "offer" : "offers"}
-                </p>
-              </Link>
+            {businesses.map((b, i) => (
+              <ScrollReveal key={b.id} delay={(i + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8} direction="up">
+                <Link
+                  href={`/b/${b.slug}`}
+                  className="dir-card"
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>{b.name}</h3>
+                    <span className="badge">{b.program?.pointsName ?? "points"}</span>
+                  </div>
+                  <p style={{ margin: 0 }}>
+                    <code className="mono">/b/{b.slug}</code>
+                  </p>
+                  <p style={{ margin: 0, fontSize: 14, color: "var(--muted)" }}>
+                    <strong style={{ color: "var(--ink)" }}>{b._count.members}</strong>{" "}
+                    {b._count.members === 1 ? "member" : "members"} ·{" "}
+                    <strong style={{ color: "var(--ink)" }}>{b._count.offers}</strong> active{" "}
+                    {b._count.offers === 1 ? "offer" : "offers"}
+                  </p>
+                </Link>
+              </ScrollReveal>
             ))}
           </div>
         )}
-      </section>
+      </ScrollReveal>
 
       {/* What you get */}
-      <section>
+      <ScrollReveal as="section" delay={1}>
         <h2 style={heading}>What you get</h2>
         <p style={sub}>Everything a loyalty club needs — for members, owners and the counter.</p>
         <div className="grid cols-3">
-          {features.map((f) => (
-            <div className="card hoverable" key={f.title}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                <FeatureIcon name={f.icon} />
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>{f.title}</h3>
+          {features.map((f, i) => (
+            <ScrollReveal key={f.title} delay={(i + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8} direction="scale">
+              <div className="card hoverable">
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                  <FeatureIcon name={f.icon} />
+                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>{f.title}</h3>
+                </div>
+                <p style={{ margin: 0, color: "var(--muted)", fontSize: 14, lineHeight: 1.65 }}>{f.text}</p>
               </div>
-              <p style={{ margin: 0, color: "var(--muted)", fontSize: 14, lineHeight: 1.65 }}>{f.text}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
-      </section>
+      </ScrollReveal>
 
       {/* Screenshots */}
-      <section>
+      <ScrollReveal as="section" delay={2}>
         <h2 style={heading}>See it in action</h2>
         <p style={sub}>The same app from three angles — member, counter and owner console.</p>
         <div className="grid cols-3">
-          {shots.map((s) => (
-            <div className="scene" key={s.src}>
-              <figure className="shot-frame tilt" style={{ margin: 0 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={s.src} alt={s.caption} width={1024} height={688} style={{ height: "auto" }} />
-                <figcaption>{s.caption}</figcaption>
-              </figure>
-            </div>
+          {shots.map((s, i) => (
+            <ScrollReveal key={s.src} delay={(i + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8} direction="left">
+              <div className="scene">
+                <figure className="shot-frame tilt" style={{ margin: 0 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={s.src} alt={s.caption} width={1024} height={688} style={{ height: "auto" }} />
+                  <figcaption>{s.caption}</figcaption>
+                </figure>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
-      </section>
+      </ScrollReveal>
 
       {/* How it works */}
-      <section>
+      <ScrollReveal as="section" delay={3}>
         <h2 style={heading}>How it works</h2>
         <p style={sub}>Three steps from sign-up to a humming loyalty club.</p>
         <div className="card">
           <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 18 }}>
             {steps.map((step, i) => (
-              <li key={step.title} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+              <li key={step.title} className="stagger-item" style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
                 <span className="step-chip">{i + 1}</span>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{step.title}</div>
@@ -221,7 +226,7 @@ export default async function LandingPage() {
             ))}
           </ol>
         </div>
-      </section>
+      </ScrollReveal>
 
       <footer style={{ textAlign: "center", color: "var(--muted)", fontSize: 13, paddingTop: 8, paddingBottom: 8 }}>
         Built as a modern loyalty platform — coffee shops, gyms, clothing stores and more.

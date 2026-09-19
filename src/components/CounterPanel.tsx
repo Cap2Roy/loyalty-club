@@ -210,7 +210,7 @@ export default function CounterPanel({
       </div>
 
       {tab === "checkin" && (
-        <div className="card">
+        <div className="card tab-content" key={tab}>
           <h2>Check in a member</h2>
           <form onSubmit={submitCheckin}>
             <label htmlFor="checkin-code">Member referral code</label>
@@ -250,7 +250,7 @@ export default function CounterPanel({
       )}
 
       {tab === "batch" && (
-        <div className="card">
+        <div className="card tab-content" key={tab}>
           <h2>Load sales (bulk check-in)</h2>
           <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 0 }}>
             Paste multiple member codes and spend amounts — one per line, separated by a comma or tab.
@@ -310,7 +310,7 @@ export default function CounterPanel({
       )}
 
       {tab === "redeem" && (
-        <div className="card">
+        <div className="card tab-content" key={tab}>
           <h2>Redeem a coupon</h2>
           <form onSubmit={lookupCoupon}>
             <label htmlFor="coupon-code">Coupon code</label>
@@ -350,7 +350,7 @@ export default function CounterPanel({
       )}
 
       {tab === "balance" && (
-        <div className="card">
+        <div className="card tab-content" key={tab}>
           <h2>Member balance</h2>
           <form onSubmit={lookupBalance}>
             <label htmlFor="balance-code">Member referral code</label>

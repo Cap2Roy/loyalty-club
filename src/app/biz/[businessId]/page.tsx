@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ExportPanel from "@/components/ExportPanel";
+import ScrollReveal from "@/components/ScrollReveal";
+import AnimatedCounter from "@/components/AnimatedCounter";
 
 export const metadata = { title: "Business dashboard" };
 
@@ -35,35 +37,38 @@ export default async function BizDashboardPage({ params }: { params: Promise<{ b
     ]);
 
   const program = business.program;
-
   return (
     <>
+      <ScrollReveal direction="up">
       <div className="grid cols-3">
         <div className="stat card">
-          <div className="value">{members}</div>
+          <div className="value"><AnimatedCounter value={members} /></div>
           <div className="label">Members</div>
         </div>
         <div className="stat card">
-          <div className="value">{checkins}</div>
+          <div className="value"><AnimatedCounter value={checkins} /></div>
           <div className="label">Check-ins</div>
         </div>
         <div className="stat card">
-          <div className="value">{pointsIssued._sum.delta ?? 0}</div>
+          <div className="value"><AnimatedCounter value={pointsIssued._sum.delta ?? 0} /></div>
           <div className="label">{program?.pointsName ?? "points"} issued</div>
         </div>
         <div className="stat card">
-          <div className="value">{pointsOutstanding._sum.points ?? 0}</div>
+          <div className="value"><AnimatedCounter value={pointsOutstanding._sum.points ?? 0} /></div>
           <div className="label">{program?.pointsName ?? "points"} outstanding</div>
         </div>
         <div className="stat card">
-          <div className="value">{activeRewards}</div>
+          <div className="value"><AnimatedCounter value={activeRewards} /></div>
           <div className="label">Active rewards</div>
         </div>
         <div className="stat card">
-          <div className="value">{activeOffers}</div>
+          <div className="value"><AnimatedCounter value={activeOffers} /></div>
           <div className="label">Active offers</div>
         </div>
       </div>
+      </ScrollReveal>
+
+      <ScrollReveal direction="up" delay={1}>
 
       <div className="grid cols-2">
         <div className="card">
@@ -120,11 +125,14 @@ export default async function BizDashboardPage({ params }: { params: Promise<{ b
           )}
         </div>
       </div>
+      </ScrollReveal>
 
+      <ScrollReveal direction="up" delay={2}>
       <div className="card">
         <h2>Accounting export</h2>
         <ExportPanel businessId={businessId} />
       </div>
+      </ScrollReveal>
      </>
   );
 }

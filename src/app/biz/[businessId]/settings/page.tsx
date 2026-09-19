@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import ProgramSettingsForm from "@/components/ProgramSettingsForm";
 import StaffInviteManager from "@/components/StaffInviteManager";
+import ScrollReveal from "@/components/ScrollReveal";
 
 export const metadata = { title: "Program settings" };
 
@@ -23,22 +24,26 @@ export default async function BizSettingsPage({ params }: { params: Promise<{ bu
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
-      <div className="card">
-        <h2>Program settings</h2>
-        <p>Configure the earn rule, points name, and membership tiers. Owner only.</p>
-        <ProgramSettingsForm
-          businessId={businessId}
-          program={{
-            pointsName: program?.pointsName ?? "points",
-            earnRate: program?.earnRate ?? 10,
-            minRedeem: program?.minRedeem ?? 100,
-            currency: program?.currency ?? "USD",
-            tierNames: program?.tierNames ?? "Member",
-            tierThresholds: program?.tierThresholds ?? "",
-          }}
-        />
-      </div>
-      <StaffInviteManager businessId={businessId} invites={invites} />
+      <ScrollReveal direction="up">
+        <div className="card">
+          <h2>Program settings</h2>
+          <p>Configure the earn rule, points name, and membership tiers. Owner only.</p>
+          <ProgramSettingsForm
+            businessId={businessId}
+            program={{
+              pointsName: program?.pointsName ?? "points",
+              earnRate: program?.earnRate ?? 10,
+              minRedeem: program?.minRedeem ?? 100,
+              currency: program?.currency ?? "USD",
+              tierNames: program?.tierNames ?? "Member",
+              tierThresholds: program?.tierThresholds ?? "",
+            }}
+          />
+        </div>
+      </ScrollReveal>
+      <ScrollReveal direction="up" delay={1}>
+        <StaffInviteManager businessId={businessId} invites={invites} />
+      </ScrollReveal>
     </div>
   );
 }

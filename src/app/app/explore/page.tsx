@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ClubDirectory from "@/components/ClubDirectory";
+import ScrollReveal from "@/components/ScrollReveal";
 
 export default async function ExplorePage() {
   const user = await currentUser();
@@ -20,12 +21,15 @@ export default async function ExplorePage() {
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
+      <ScrollReveal direction="up">
       <div>
         <h1 style={{ margin: 0, fontSize: 24 }}>Explore clubs</h1>
         <p style={{ margin: "4px 0 0", color: "var(--muted)" }}>
           Discover loyalty clubs and start earning on every visit.
         </p>
       </div>
+      </ScrollReveal>
+      <ScrollReveal direction="up" delay={1}>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <a href="/app" className="badge muted">My clubs</a>
         <span className="badge">Explore clubs</span>
@@ -34,6 +38,8 @@ export default async function ExplorePage() {
         <a href="/app/map" className="badge muted">Map</a>
         <a href="/app/account" className="badge muted">Account</a>
       </div>
+      </ScrollReveal>
+      <ScrollReveal direction="up" delay={2}>
       <ClubDirectory
 
         businesses={businesses.map((b) => ({
@@ -48,6 +54,7 @@ export default async function ExplorePage() {
         }))}
         joinedSlugs={memberships.map((m) => m.business.slug)}
       />
+      </ScrollReveal>
     </div>
   );
 }

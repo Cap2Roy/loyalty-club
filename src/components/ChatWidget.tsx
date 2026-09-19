@@ -88,6 +88,7 @@ export default function ChatWidget() {
       {/* Chat panel */}
       {open && (
         <div
+          className="panel-slide-up"
           style={{
             position: "fixed",
             bottom: 84,
@@ -96,7 +97,9 @@ export default function ChatWidget() {
             maxWidth: "calc(100vw - 32px)",
             height: 480,
             maxHeight: "calc(100vh - 120px)",
-            background: "var(--surface)",
+            background: "var(--surface-glass)",
+            backdropFilter: "blur(24px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(24px) saturate(1.8)",
             border: "1px solid var(--line)",
             borderRadius: "var(--radius-lg)",
             boxShadow: "var(--shadow-2xl)",
@@ -104,7 +107,6 @@ export default function ChatWidget() {
             flexDirection: "column",
             zIndex: 9999,
             overflow: "hidden",
-            animation: "slide-in-up 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
           {/* Header */}
