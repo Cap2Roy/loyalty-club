@@ -16,10 +16,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ business
     await requireOwner(businessId);
     const body = await readJson<ProgramBody>(req);
 
-    const pointsName = (body.pointsName ?? "").trim();
+    const pointsName = String(body.pointsName ?? "").trim();
     if (!pointsName) return bad("pointsName is required", 400);
     if (pointsName.length > 30) return bad("pointsName must be at most 30 characters", 400);
-    const currency = (body.currency ?? "").trim();
+    const currency = String(body.currency ?? "").trim();
     if (!currency) return bad("currency is required", 400);
     if (currency.length > 10) return bad("currency must be at most 10 characters", 400);
     const earnRate = body.earnRate;
@@ -30,11 +30,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ business
     if (typeof minRedeem !== "number" || !Number.isInteger(minRedeem) || minRedeem < 0) {
       return bad("minRedeem must be a non-negative integer", 400);
     }
-    const tierNames = (body.tierNames ?? "").trim();
+    const tierNames = String(body.tierNames ?? "").trim();
     if (!tierNames) return bad("tierNames is required", 400);
     const names = tierNames.split(",").map((s) => s.trim()).filter(Boolean);
     if (names.length === 0) return bad("tierNames must contain at least one tier", 400);
-    const thresholds = (body.tierThresholds ?? "").trim();
+    const thresholds = String(body.tierThresholds ?? "").trim();
     let parsedThresholds: number[] = [];
     if (thresholds !== "") {
       parsedThresholds = thresholds.split(",").map((s) => parseFloat(s.trim()));

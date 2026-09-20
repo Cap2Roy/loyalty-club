@@ -15,15 +15,15 @@ export async function POST(req: Request) {
 
     const { email, password } = await readJson<{ email?: string; password?: string }>(req);
     const normalized = (email ?? "").trim().toLowerCase();
-    if (!EMAIL_RE.test(normalized)) throw bad("Enter a valid email address", 400);
-    if (normalized.length > MAX_EMAIL_LEN) throw bad("Email address is too long", 400);
+    if (!EMAIL_RE.test(normalized)) return bad("Enter a valid email address", 400);
+    if (normalized.length > MAX_EMAIL_LEN) return bad("Email address is too long", 400);
 
     if (typeof password !== "string" || password.length < 8) {
-      throw bad("Password must be at least 8 characters", 400);
+      return bad("Password must be at least 8 characters", 400);
     }
     // bcrypt silently truncates at 72 bytes; reject longer inputs explicitly.
     if (Buffer.byteLength(password, "utf8") > 72) {
-      throw bad("Password must be at most 72 bytes", 400);
+      return bad("Password must be at most 72 bytes", 400);
     }
 
     const existing = await prisma.user.findUnique({ where: { email: normalized } });

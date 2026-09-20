@@ -19,11 +19,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ busine
 
     const data: { title?: string; description?: string; cost?: number; expiresInDays?: number | null; active?: boolean } = {};
     if (body.title !== undefined) {
-      const title = body.title.trim();
+      const title = String(body.title).trim();
       if (!title) return bad("Title is required", 400);
       data.title = title;
     }
-    if (body.description !== undefined) data.description = body.description.trim();
+    if (body.description !== undefined) data.description = String(body.description).trim();
     if (body.cost !== undefined) {
       if (typeof body.cost !== "number" || !Number.isInteger(body.cost) || body.cost <= 0) {
         return bad("Cost must be a positive integer", 400);
