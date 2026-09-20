@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { liveOfferClause } from "@/lib/loyalty";
 import ExportPanel from "@/components/ExportPanel";
 import ScrollReveal from "@/components/ScrollReveal";
 import AnimatedCounter from "@/components/AnimatedCounter";
@@ -14,14 +15,14 @@ export default async function BizDashboardPage({ params }: { params: Promise<{ b
   });
   if (!business) notFound();
 
-  const [members, checkins, pointsIssued, pointsOutstanding, activeRewards, activeOffers, recentCheckins, topMembers] =
+  const [members, checkins, pointsIssued, pointsOutstanding, activeRewards, activeOffers, recentCheckins, topMembers, totalRevenue, couponsTotal, couponsRedeemed] =
     await Promise.all([
       prisma.membership.count({ where: { businessId } }),
       prisma.checkin.count({ where: { businessId } }),
       prisma.ledgerEntry.aggregate({ _sum: { delta: true }, where: { reason: "EARN", membership: { businessId } } }),
       prisma.membership.aggregate({ _sum: { points: true }, where: { businessId } }),
       prisma.reward.count({ where: { businessId, active: true } }),
-      prisma.offer.count({ where: { businessId, active: true } }),
+      prisma.offer.count({ where: { businessId, ...liveOfferClause() } }),
       prisma.checkin.findMany({
         where: { businessId },
         orderBy: { at: "desc" },
@@ -34,6 +35,9 @@ export default async function BizDashboardPage({ params }: { params: Promise<{ b
         take: 5,
         include: { user: true },
       }),
+      prisma.checkin.aggregate({ _sum: { spend: true }, where: { businessId } }),
+      prisma.coupon.count({ where: { businessId } }),
+      prisma.coupon.count({ where: { businessId, status: "REDEEMED" } }),
     ]);
 
   const program = business.program;
@@ -69,7 +73,22 @@ export default async function BizDashboardPage({ params }: { params: Promise<{ b
       </ScrollReveal>
 
       <ScrollReveal direction="up" delay={1}>
-
+      <div className="grid cols-3">
+        <div className="stat card">
+          <div className="value">{program?.currency ?? "USD"} <AnimatedCounter value={Math.round(totalRevenue._sum.spend ?? 0)} /></div>
+          <div className="label">Total revenue</div>
+        </div>
+        <div className="stat card">
+          <div className="value">{program?.currency ?? "USD"} <AnimatedCounter value={checkins > 0 ? Math.round((totalRevenue._sum.spend ?? 0) / checkins * 100) / 100 : 0} /></div>
+          <div className="label">Avg spend / visit</div>
+        </div>
+        <div className="stat card">
+          <div className="value"><AnimatedCounter value={couponsTotal > 0 ? Math.round(couponsRedeemed / couponsTotal * 100) : 0} />%</div>
+          <div className="label">Coupon redemption rate</div>
+        </div>
+      </div>
+      </ScrollReveal>
+      <ScrollReveal direction="up" delay={2}>
       <div className="grid cols-2">
         <div className="card">
           <h2>Recent check-ins</h2>

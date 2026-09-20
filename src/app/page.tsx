@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
+import { liveOfferClause } from "@/lib/loyalty";
 import ScrollReveal from "@/components/ScrollReveal";
 
 // Directory data is live DB state — never snapshot it at build time.
@@ -79,7 +80,7 @@ export default async function LandingPage() {
     take: 9,
     include: {
       program: { select: { pointsName: true } },
-      _count: { select: { members: true, offers: { where: { active: true } } } },
+      _count: { select: { members: true, offers: { where: liveOfferClause() } } },
     },
   });
 

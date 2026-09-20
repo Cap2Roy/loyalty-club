@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { liveOfferClause } from "@/lib/loyalty";
 import ScrollReveal from "@/components/ScrollReveal";
 
 export default async function OffersFeedPage() {
@@ -17,8 +18,8 @@ export default async function OffersFeedPage() {
   const offers =
     businessIds.length > 0
       ? await prisma.offer.findMany({
-          where: { businessId: { in: businessIds }, active: true },
-          orderBy: { startsAt: "desc" },
+          where: { businessId: { in: businessIds }, ...liveOfferClause() },
+          orderBy: { endsAt: "desc" },
           include: { business: { select: { name: true, slug: true } } },
         })
       : [];

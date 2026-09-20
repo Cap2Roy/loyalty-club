@@ -3,11 +3,12 @@ import { notFound, redirect } from "next/navigation";
 import QRCode from "qrcode";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { computeTier, programDefaults } from "@/lib/loyalty";
+import { computeTier, programDefaults, liveOfferClause } from "@/lib/loyalty";
 import RedeemButton from "@/components/RedeemButton";
 import ReferralShare from "@/components/ReferralShare";
 import ScrollReveal from "@/components/ScrollReveal";
 import AnimatedCounter from "@/components/AnimatedCounter";
+import LeaveClubButton from "@/components/LeaveClubButton";
 
 export default async function ClubPage({
   params,
@@ -39,8 +40,8 @@ export default async function ClubPage({
       orderBy: { cost: "asc" },
     }),
     prisma.offer.findMany({
-      where: { businessId: business.id, active: true },
-      orderBy: { startsAt: "asc" },
+      where: { businessId: business.id, ...liveOfferClause() },
+      orderBy: { endsAt: "asc" },
     }),
     prisma.coupon.findMany({
       where: { membershipId: membership.id },
@@ -85,6 +86,9 @@ export default async function ClubPage({
           <a href="/app" className="btn secondary small">← My clubs</a>
           <h1 style={{ margin: 0, fontSize: 24 }}>{business.name}</h1>
           <span className="badge good">{tier.name}</span>
+          <div style={{ marginLeft: "auto" }}>
+            <LeaveClubButton membershipId={membership.id} clubName={business.name} />
+          </div>
         </div>
       </ScrollReveal>
 

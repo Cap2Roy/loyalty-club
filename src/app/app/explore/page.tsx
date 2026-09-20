@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import ClubDirectory from "@/components/ClubDirectory";
+import { liveOfferClause } from "@/lib/loyalty";
 import ScrollReveal from "@/components/ScrollReveal";
+import ClubDirectory from "@/components/ClubDirectory";
 
 export default async function ExplorePage() {
   const user = await currentUser();
@@ -13,7 +14,7 @@ export default async function ExplorePage() {
       orderBy: { createdAt: "asc" },
       include: {
         program: { select: { pointsName: true, currency: true, earnRate: true } },
-        _count: { select: { members: true, offers: { where: { active: true } } } },
+        _count: { select: { members: true, offers: { where: liveOfferClause() } } },
       },
     }),
     prisma.membership.findMany({ where: { userId: user.id }, select: { business: { select: { slug: true } } } }),

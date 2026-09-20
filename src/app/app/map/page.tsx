@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import StoreMap from "@/components/StoreMap";
+import { liveOfferClause } from "@/lib/loyalty";
 import ScrollReveal from "@/components/ScrollReveal";
+import StoreMap from "@/components/StoreMap";
 
 export const metadata = { title: "Store map" };
 
@@ -14,7 +15,7 @@ export default async function MapPage() {
     orderBy: { createdAt: "asc" },
     include: {
       program: { select: { pointsName: true } },
-      _count: { select: { members: true, offers: { where: { active: true } } } },
+      _count: { select: { members: true, offers: { where: liveOfferClause() } } },
     },
   });
 

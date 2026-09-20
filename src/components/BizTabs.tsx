@@ -14,6 +14,7 @@ export default function BizTabs({ businessId }: { businessId: string }) {
     { href: `${base}/members`, label: "Members" },
     { href: `${base}/rewards`, label: "Rewards" },
     { href: `${base}/offers`, label: "Offers" },
+    { href: `${base}/coupons`, label: "Coupons" },
     { href: `${base}/settings`, label: "Settings" },
   ];
 

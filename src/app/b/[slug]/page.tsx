@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { currentUserId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { tierConfig } from "@/lib/loyalty";
+import { tierConfig, liveOfferClause } from "@/lib/loyalty";
 import JoinClubButton from "@/components/JoinClubButton";
 
 export default async function PublicBusinessPage({
@@ -28,8 +28,8 @@ export default async function PublicBusinessPage({
       take: 5,
     }),
     prisma.offer.findMany({
-      where: { businessId: business.id, active: true },
-      orderBy: { startsAt: "desc" },
+      where: { businessId: business.id, ...liveOfferClause() },
+      orderBy: { endsAt: "desc" },
     }),
   ]);
 

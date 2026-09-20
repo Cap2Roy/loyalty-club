@@ -90,3 +90,22 @@ export async function redeemCoupon(couponId: string, businessId: string) {
 export function programDefaults() {
   return { pointsName: "points", earnRate: 10, minRedeem: 100, currency: "USD", tierNames: "Member", tierThresholds: "" };
 }
+/**
+ * Prisma where-clause fragment for the date/active part of "live offer" filtering.
+ * An offer is live when active = true AND (endsAt is null OR endsAt >= now)
+ * AND (startsAt is null OR startsAt <= now).
+ * Combine with `{ businessId, ...liveOfferClause() }` or `{ businessId: { in: ids }, ...liveOfferClause() }`.
+ */
+export function liveOfferClause() {
+  const now = new Date();
+  return {
+    active: true,
+    OR: [
+      { endsAt: null },
+      { endsAt: { gte: now } },
+    ],
+    AND: [
+      { OR: [{ startsAt: null }, { startsAt: { lte: now } }] },
+    ],
+  };
+}
